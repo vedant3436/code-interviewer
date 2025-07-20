@@ -1,0 +1,59 @@
+{% extends '_base.html' %}
+{% load static %}
+
+{% block title %}Playgrounds page{% endblock title %}
+
+{% block content %}
+<!-- <div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+  <img src="{% static 'images/lithium.png' %}" class="img-fluid" alt="Lithium logo"/>
+  <p class="lead">A Django starter project with batteries.</p>
+</div> -->
+<div class="mb-3">
+    <label for="exampleFormControlTextarea1" class="form-label">Example textarea</label>
+    <textarea class="form-control" id="code-input" rows="3"></textarea>
+</div>
+<button type="button" class="btn btn-success" id="run-button">Run Code</button>
+
+<pre id="output"></pre>
+
+<script>
+    document.getElementById("run-button").addEventListener("click", async function () {
+      const code = document.getElementById("code-input").value;
+  
+      const response = await fetch("/playground/run_code/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": getCSRFToken(),  // we’ll define this below
+        },
+        body: JSON.stringify({ code: code })
+      });
+  
+      const result = await response.json();
+  
+      document.getElementById("output").textContent =
+        "Output:\n" + result.stdout +
+        "\n\nErrors:\n" + result.stderr +
+        "\n\nExit Code: " + result.exit_code;
+    });
+  
+    // Helper function to grab CSRF token from cookie
+    function getCSRFToken() {
+      let cookieValue = null;
+      let name = 'csrftoken';
+      if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let cookie of cookies) {
+          cookie = cookie.trim();
+          if (cookie.startsWith(name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+  </script>
+  
+
+{% endblock content %}
