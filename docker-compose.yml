@@ -34,6 +34,8 @@ services:
     build:
       context: ./runner
     container_name: runner_service
+    volumes:
+      - ./temp:/app/temp
     stdin_open: true
     tty: true
 
