@@ -23,8 +23,8 @@
       const response = await fetch("/playground/run_code/", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
-          "X-CSRFToken": getCSRFToken(),  // we’ll define this below
+          "Content-Type": "application/json"
+          // "X-CSRFToken": getCSRFToken(),  // we’ll define this below
         },
         body: JSON.stringify({ code: code })
       });

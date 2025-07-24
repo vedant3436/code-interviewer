@@ -6,6 +6,8 @@ services:
       - 8000:8000
     volumes:
       - ./src:/app
+      - ./temp:/app/temp
+      - /var/run/docker.sock:/var/run/docker.sock #remove if hosting
     depends_on:
       - db
     environment:
