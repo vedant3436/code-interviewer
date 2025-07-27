@@ -7,11 +7,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 
-# RUN apt-get update && apt-get install -y curl
-RUN apt-get update && \
-    apt-get install -y curl docker.io && \
-    rm -rf /var/lib/apt/lists/*
-
+RUN apt-get update && apt-get install -y curl
 # install uv
 COPY --from=ghcr.io/astral-sh/uv:0.6.17 /uv /uvx /bin/
 

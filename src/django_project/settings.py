@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "accounts",
     "pages",
     "playgrounds",
+    "django_celery_results", #3rd party
 ]
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#middleware
@@ -217,3 +218,9 @@ CSRF_TRUSTED_ORIGINS = [
     "http://localhost:8000",  # Default Django dev server
     "http://127.0.0.1:8000",  # Alternative local address
 ]
+
+CELERY_BROKER_URL = env("CELERY_BROKER_URL")
+CELERY_RESULT_BACKEND = env("CELERY_RESULT_BACKEND")
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'

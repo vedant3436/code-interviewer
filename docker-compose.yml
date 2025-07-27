@@ -6,10 +6,9 @@ services:
       - 8000:8000
     volumes:
       - ./src:/app
-      - ./temp:/app/temp
-      - /var/run/docker.sock:/var/run/docker.sock #remove if hosting
     depends_on:
       - db
+      - rabbitmq
     environment:
       - DEBUG=1
       - DB_NAME=${DB_NAME}
@@ -32,16 +31,31 @@ services:
     ports:
       - "5432:5432"
 
-  runner:
-    build:
-      context: ./runner
-    container_name: runner_service
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"       # AMQP protocol
+      - "15672:15672"     # Management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+
+  celery:
+    build: .
+    command: celery -A django_project worker --loglevel=info
+    depends_on:
+      - web
+      - rabbitmq
     volumes:
-      - ./temp:/app/temp
-    stdin_open: true
-    tty: true
-
-
+      - ./src:/app
+    environment:
+      - DJANGO_SETTINGS_MODULE=django_project.settings
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=5432
 
 volumes:
   postgres_data:

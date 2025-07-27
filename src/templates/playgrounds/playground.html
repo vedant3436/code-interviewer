@@ -17,43 +17,64 @@
 <pre id="output"></pre>
 
 <script>
-    document.getElementById("run-button").addEventListener("click", async function () {
-      const code = document.getElementById("code-input").value;
-  
-      const response = await fetch("/playground/run_code/", {
+  document.getElementById("run-button").addEventListener("click", async function () {
+    const code = document.getElementById("code-input").value;
+
+    // Step 1: Trigger the task
+    const response = await fetch("/playground/run_code/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": getCSRFToken(),
+      },
+      body: JSON.stringify({ code: code })
+    });
+
+    const { task_id } = await response.json();
+    document.getElementById("output").textContent = "Running...";
+
+    // Step 2: Poll for result every second
+    const pollInterval = setInterval(async () => {
+      const resultResponse = await fetch("/playground/get_result/", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
-          // "X-CSRFToken": getCSRFToken(),  // we’ll define this below
+          "Content-Type": "application/json",
+          "X-CSRFToken": getCSRFToken(),
         },
-        body: JSON.stringify({ code: code })
+        body: JSON.stringify({ task_id: task_id })
       });
-  
-      const result = await response.json();
-  
-      document.getElementById("output").textContent =
-        "Output:\n" + result.stdout +
-        "\n\nErrors:\n" + result.stderr +
-        "\n\nExit Code: " + result.exit_code;
-    });
-  
-    // Helper function to grab CSRF token from cookie
-    function getCSRFToken() {
-      let cookieValue = null;
-      let name = 'csrftoken';
-      if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let cookie of cookies) {
-          cookie = cookie.trim();
-          if (cookie.startsWith(name + '=')) {
-            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-            break;
-          }
+
+      const resultData = await resultResponse.json();
+
+      if (resultData.status === "completed") {
+        clearInterval(pollInterval);
+
+        const result = resultData.result;
+        document.getElementById("output").textContent =
+          "Output:\n" + result.stdout +
+          "\n\nErrors:\n" + result.stderr +
+          "\n\nExit Code: " + result.exit_code;
+      }
+    }, 1000); // poll every second
+  });
+
+  function getCSRFToken() {
+    let cookieValue = null;
+    let name = 'csrftoken';
+    if (document.cookie && document.cookie !== '') {
+      const cookies = document.cookie.split(';');
+      for (let cookie of cookies) {
+        cookie = cookie.trim();
+        if (cookie.startsWith(name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
         }
       }
-      return cookieValue;
     }
-  </script>
+    return cookieValue;
+  }
+</script>
+
   
 
 {% endblock content %}
