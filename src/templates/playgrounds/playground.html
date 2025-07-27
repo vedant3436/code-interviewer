@@ -4,23 +4,45 @@
 {% block title %}Playgrounds page{% endblock title %}
 
 {% block content %}
-<!-- <div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
-  <img src="{% static 'images/lithium.png' %}" class="img-fluid" alt="Lithium logo"/>
-  <p class="lead">A Django starter project with batteries.</p>
-</div> -->
+<!-- Editor Container -->
 <div class="mb-3">
-    <label for="exampleFormControlTextarea1" class="form-label">Example textarea</label>
-    <textarea class="form-control" id="code-input" rows="3"></textarea>
+  <label for="code-input" class="form-label">Write your Python code:</label>
+  <textarea id="code-input">print("Hello, World!")</textarea>
 </div>
+
+<!-- Run Button -->
 <button type="button" class="btn btn-success" id="run-button">Run Code</button>
 
+<!-- Output Display -->
 <pre id="output"></pre>
 
-<script>
-  document.getElementById("run-button").addEventListener("click", async function () {
-    const code = document.getElementById("code-input").value;
+<!-- CodeMirror CSS -->
+<link rel="stylesheet" href="https://unpkg.com/codemirror@5.65.14/lib/codemirror.css">
+<link rel="stylesheet" href="https://unpkg.com/codemirror@5.65.14/theme/material.css">
 
-    // Step 1: Trigger the task
+<!-- CodeMirror JS -->
+<script src="https://unpkg.com/codemirror@5.65.14/lib/codemirror.js"></script>
+<script src="https://unpkg.com/codemirror@5.65.14/mode/python/python.js"></script>
+
+<!-- CodeMirror Setup -->
+<script>
+  const editor = CodeMirror.fromTextArea(document.getElementById("code-input"), {
+    mode: "python",
+    theme: "material",
+    lineNumbers: true,
+    indentUnit: 4,
+    tabSize: 4,
+    indentWithTabs: false
+  });
+
+  // Optional: Set fixed editor height
+  editor.setSize("100%", "400px");
+
+  // Handle "Run Code" button
+  document.getElementById("run-button").addEventListener("click", async function () {
+    const code = editor.getValue();  // Use CodeMirror's value
+
+    // Step 1: Trigger Celery task
     const response = await fetch("/playground/run_code/", {
       method: "POST",
       headers: {
@@ -33,7 +55,7 @@
     const { task_id } = await response.json();
     document.getElementById("output").textContent = "Running...";
 
-    // Step 2: Poll for result every second
+    // Step 2: Poll for task result
     const pollInterval = setInterval(async () => {
       const resultResponse = await fetch("/playground/get_result/", {
         method: "POST",
@@ -48,19 +70,19 @@
 
       if (resultData.status === "completed") {
         clearInterval(pollInterval);
-
         const result = resultData.result;
         document.getElementById("output").textContent =
           "Output:\n" + result.stdout +
           "\n\nErrors:\n" + result.stderr +
           "\n\nExit Code: " + result.exit_code;
       }
-    }, 1000); // poll every second
+    }, 1000);
   });
 
+  // CSRF helper
   function getCSRFToken() {
     let cookieValue = null;
-    let name = 'csrftoken';
+    const name = 'csrftoken';
     if (document.cookie && document.cookie !== '') {
       const cookies = document.cookie.split(';');
       for (let cookie of cookies) {
@@ -74,7 +96,4 @@
     return cookieValue;
   }
 </script>
-
-  
-
 {% endblock content %}
