@@ -18,6 +18,7 @@ def run_code_view(request):
     if request.method == "POST":
         data = json.loads(request.body)
         code = data.get("code", "")
+        stdin = data.get("stdin", "") #new
 
         task = run_code_task.delay(code)
 

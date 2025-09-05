@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "accounts",
     "pages",
     "playgrounds",
+    "questions",
     "django_celery_results", #3rd party
 ]
 
