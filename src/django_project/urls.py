@@ -7,6 +7,7 @@ urlpatterns = [
     path("accounts/", include("allauth.urls")),
     path("", include("pages.urls")),
     path("playground/", include("playgrounds.urls")),
+    path("questions/", include("questions.urls")),
 ]
 
 if settings.DEBUG:

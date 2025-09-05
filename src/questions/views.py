@@ -43,13 +43,13 @@ class TestCaseCreateView(CreateView):
         return super().form_valid(form)
     
     def get_success_url(self):
-        return reverse("question:question-detail", kwargs={"pk": self.kwargs["pk"]})
+        return reverse("questions:question-detail", kwargs={"pk": self.kwargs["pk"]})
     
 class TestCaseDeleteView(DeleteView):
     model = TestCase
     template_name = "questions/testcase_confirm_delete.html"
 
     def get_success_url(self):
-        return reverse("questions:question-detail", kwargs={"pk": self.objectve.question.pk})
+        return reverse("questions:question-detail", kwargs={"pk": self.object.question.pk})
 
 
