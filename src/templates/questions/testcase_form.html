@@ -1,0 +1,67 @@
+{% extends "_base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card shadow-sm rounded-3">
+        <div class="card-body p-4">
+          <h2 class="card-title mb-4">
+            {% if object %}
+              Edit Test Case
+            {% else %}
+              Add New Test Case
+            {% endif %}
+          </h2>
+
+          <form method="post">
+            {% csrf_token %}
+            
+            <div class="mb-3">
+              <label for="id_input_data" class="form-label">Input Data</label>
+              <textarea 
+                name="input_data" 
+                id="id_input_data" 
+                rows="5" 
+                class="form-control" 
+                placeholder="Enter the input for this test case..."
+              >{{ form.input_data.value|default_if_none:'' }}</textarea>
+              {% if form.input_data.errors %}
+                <div class="text-danger small mt-1">
+                  {{ form.input_data.errors }}
+                </div>
+              {% endif %}
+            </div>
+
+            <div class="mb-3">
+              <label for="id_expected_output" class="form-label">Expected Output</label>
+              <textarea 
+                name="expected_output" 
+                id="id_expected_output" 
+                rows="5" 
+                class="form-control" 
+                placeholder="Enter the expected output..."
+              >{{ form.expected_output.value|default_if_none:'' }}</textarea>
+              {% if form.expected_output.errors %}
+                <div class="text-danger small mt-1">
+                  {{ form.expected_output.errors }}
+                </div>
+              {% endif %}
+            </div>
+
+            <div class="d-flex justify-content-between">
+              <a href="{% url 'questions:question-detail' pk=question.pk %}" class="btn btn-outline-secondary">
+                Cancel
+              </a>
+              <button type="submit" class="btn btn-primary">
+                Save Test Case
+              </button>
+            </div>
+          </form>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

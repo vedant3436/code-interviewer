@@ -1,0 +1,25 @@
+{% extends "_base.html" %}
+
+{% block title %}Questions{% endblock title %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mt-4 mb-3">
+  <h1>Questions</h1>
+  <a href="{% url 'questions:question-create' %}" class="btn btn-primary">+ New Question</a>
+</div>
+
+{% if questions %}
+  <div class="list-group">
+    {% for question in questions %}
+      <a href="{% url 'questions:question-detail' question.pk %}" 
+         class="list-group-item list-group-item-action">
+        <h5 class="mb-1">{{ question.title }}</h5>
+        <p class="mb-1 text-muted">{{ question.description|truncatewords:20 }}</p>
+        <small>By {{ question.author }} | {{ question.created_at|date:"M d, Y" }}</small>
+      </a>
+    {% endfor %}
+  </div>
+{% else %}
+  <p class="text-muted">No questions have been added yet.</p>
+{% endif %}
+{% endblock content %}

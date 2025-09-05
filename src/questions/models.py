@@ -1,6 +1,6 @@
 from django.db import models
 from django.conf import settings
-
+from django.urls import reverse
 
 class Question(models.Model):
     """A coding question created by a user (author)."""
@@ -19,6 +19,9 @@ class Question(models.Model):
 
     def __str__(self):
         return self.title
+    
+    def get_absolute_url(self):
+        return reverse("questions:question-detail", kwargs={"pk": self.pk})
 
 
 class TestCase(models.Model):

@@ -2,6 +2,8 @@ from django.urls import path
 
 from .views import QuestionCreateView, QuestionDeleteView, QuestionDetailView, QuestionListView, QuestionUpdateView, TestCaseCreateView, TestCaseDeleteView
 
+app_name = "questions"
+
 urlpatterns = [
     path("", QuestionListView.as_view(), name="question-list"),
     path("<int:pk>/", QuestionDetailView.as_view(), name="question-detail"),

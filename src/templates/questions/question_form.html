@@ -1,0 +1,47 @@
+{% extends "_base.html" %}
+
+{% block title %}
+  {% if form.instance.pk %}Edit Question{% else %}New Question{% endif %}
+{% endblock title %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h3">
+    {% if form.instance.pk %}Edit Question{% else %}Create New Question{% endif %}
+  </h1>
+</div>
+
+<form method="post" novalidate>
+  {% csrf_token %}
+
+  <div class="mb-3">
+    <label for="id_title" class="form-label">Title</label>
+    {{ form.title }}
+    {% if form.title.errors %}
+      <div class="text-danger small">{{ form.title.errors }}</div>
+    {% endif %}
+  </div>
+
+  <div class="mb-3">
+    <label for="id_description" class="form-label">Description</label>
+    {{ form.description }}
+    {% if form.description.errors %}
+      <div class="text-danger small">{{ form.description.errors }}</div>
+    {% endif %}
+  </div>
+
+  <button type="submit" class="btn btn-success">
+    {% if form.instance.pk %}Update{% else %}Create{% endif %}
+  </button>
+  <a href="{% url 'questions:question-list' %}" class="btn btn-secondary">Cancel</a>
+</form>
+
+<script>
+  // Add Bootstrap form-control class dynamically
+  document.querySelectorAll("input, textarea, select").forEach(el => {
+    if (!el.classList.contains("form-control")) {
+      el.classList.add("form-control");
+    }
+  });
+</script>
+{% endblock content %}

@@ -44,6 +44,11 @@ class TestCaseCreateView(CreateView):
     
     def get_success_url(self):
         return reverse("questions:question-detail", kwargs={"pk": self.kwargs["pk"]})
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["question"] = get_object_or_404(Question, pk=self.kwargs["pk"])
+        return context
     
 class TestCaseDeleteView(DeleteView):
     model = TestCase
